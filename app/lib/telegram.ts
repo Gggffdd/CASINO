@@ -1,10 +1,5 @@
-// Упрощённая работа с Telegram WebApp без конфликта типов
-
-declare global {
-  interface Window {
-    Telegram: any;
-  }
-}
+// Расширяем существующий тип Telegram, а не переопределяем
+import '@types/telegram-web-app';
 
 // Получение объекта WebApp
 export const getWebApp = () => {
