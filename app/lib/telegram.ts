@@ -1,80 +1,8 @@
-// Типы для Telegram WebApp
+// Упрощённая работа с Telegram WebApp без конфликта типов
+
 declare global {
   interface Window {
-    Telegram: {
-      WebApp: {
-        initData: string;
-        initDataUnsafe: {
-          user?: {
-            id: number;
-            first_name: string;
-            last_name?: string;
-            username?: string;
-            language_code?: string;
-            is_premium?: boolean;
-          };
-          chat?: {
-            id: number;
-            type: string;
-          };
-          auth_date?: number;
-          hash?: string;
-        };
-        ready: () => void;
-        expand: () => void;
-        close: () => void;
-        enableClosingConfirmation: () => void;
-        disableClosingConfirmation: () => void;
-        MainButton: {
-          text: string;
-          color: string;
-          textColor: string;
-          isVisible: boolean;
-          isActive: boolean;
-          setText: (text: string) => void;
-          show: () => void;
-          hide: () => void;
-          enable: () => void;
-          disable: () => void;
-          onClick: (callback: () => void) => void;
-          offClick: (callback: () => void) => void;
-        };
-        BackButton: {
-          isVisible: boolean;
-          show: () => void;
-          hide: () => void;
-          onClick: (callback: () => void) => void;
-          offClick: (callback: () => void) => void;
-        };
-        HapticFeedback: {
-          impactOccurred: (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft') => void;
-          notificationOccurred: (type: 'error' | 'success' | 'warning') => void;
-          selectionChanged: () => void;
-        };
-        showAlert: (message: string, callback?: () => void) => void;
-        showConfirm: (message: string, callback?: (confirmed: boolean) => void) => void;
-        showPopup: (params: {
-          title?: string;
-          message: string;
-          buttons?: { id?: string; type?: string; text?: string }[];
-        }, callback?: (buttonId: string) => void) => void;
-        colorScheme: 'light' | 'dark';
-        themeParams: {
-          bg_color: string;
-          text_color: string;
-          hint_color: string;
-          link_color: string;
-          button_color: string;
-          button_text_color: string;
-          secondary_bg_color: string;
-        };
-        isExpanded: boolean;
-        viewportHeight: number;
-        viewportStableHeight: number;
-        platform: string;
-        version: string;
-      };
-    };
+    Telegram: any;
   }
 }
 
@@ -91,7 +19,9 @@ export const initTelegramWebApp = () => {
   
   webApp.ready();
   webApp.expand();
-  webApp.enableClosingConfirmation();
+  if (webApp.enableClosingConfirmation) {
+    webApp.enableClosingConfirmation();
+  }
   
   return webApp;
 };
@@ -123,7 +53,7 @@ export const getInitData = () => {
 // Главная кнопка
 export const showMainButton = (text: string, onClick: () => void) => {
   const webApp = getWebApp();
-  if (!webApp) return;
+  if (!webApp || !webApp.MainButton) return;
   
   webApp.MainButton.setText(text);
   webApp.MainButton.show();
@@ -132,12 +62,12 @@ export const showMainButton = (text: string, onClick: () => void) => {
 
 export const hideMainButton = () => {
   const webApp = getWebApp();
-  webApp?.MainButton.hide();
+  webApp?.MainButton?.hide();
 };
 
 export const updateMainButton = (text: string, isEnabled: boolean = true) => {
   const webApp = getWebApp();
-  if (!webApp) return;
+  if (!webApp || !webApp.MainButton) return;
   
   webApp.MainButton.setText(text);
   if (isEnabled) {
@@ -150,7 +80,7 @@ export const updateMainButton = (text: string, isEnabled: boolean = true) => {
 // Кнопка назад
 export const showBackButton = (onClick: () => void) => {
   const webApp = getWebApp();
-  if (!webApp) return;
+  if (!webApp || !webApp.BackButton) return;
   
   webApp.BackButton.show();
   webApp.BackButton.onClick(onClick);
@@ -158,18 +88,18 @@ export const showBackButton = (onClick: () => void) => {
 
 export const hideBackButton = () => {
   const webApp = getWebApp();
-  webApp?.BackButton.hide();
+  webApp?.BackButton?.hide();
 };
 
 // Виброотклик
 export const hapticImpact = (style: 'light' | 'medium' | 'heavy' = 'medium') => {
   const webApp = getWebApp();
-  webApp?.HapticFeedback.impactOccurred(style);
+  webApp?.HapticFeedback?.impactOccurred(style);
 };
 
 export const hapticNotification = (type: 'error' | 'success' | 'warning' = 'success') => {
   const webApp = getWebApp();
-  webApp?.HapticFeedback.notificationOccurred(type);
+  webApp?.HapticFeedback?.notificationOccurred(type);
 };
 
 // Уведомления
